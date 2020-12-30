@@ -6,5 +6,6 @@ router=routers.DefaultRouter()
 router.register(r'users',views.UserModelViewset)
 urlpatterns =[
     path('',include(router.urls)),
-    path('login/',views.signin,name='signin')
+    path('login/',views.signin,name='signin'),
+    path('logout/<slug:id>/',views.signout,name='singout')
 ]
