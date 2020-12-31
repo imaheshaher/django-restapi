@@ -10,3 +10,9 @@ class CustomUser(AbstractUser):
     session_token = models.CharField(max_length=10,default="t")
 
 
+
+class Blog(models.Model):
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    title = models.CharField(max_length=250,blank=True,null=True)
+    description = models.CharField(max_length=500,blank=True,null=True)
+    created_at = models.DateTimeField(auto_now_add=True)

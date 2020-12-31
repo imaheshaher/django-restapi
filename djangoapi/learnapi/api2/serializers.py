@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser
+from .models import CustomUser,Blog
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -22,3 +22,9 @@ class UserSerializer(serializers.ModelSerializer):
         instance.set_password(instance.password)
         instance.save()
         return instance
+
+class BlogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Blog
+        excludes = ['user']
+        fields = ('title','description')

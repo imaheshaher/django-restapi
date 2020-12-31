@@ -39,10 +39,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'api2',
-    'rest_framework'
+    'rest_framework',
+    'corsheaders'
 ]
+CORS_ALLOW_ALL_ORIGINS=True
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -122,9 +127,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework.authentication.BasicAuthentication',
-#         'rest_framework.authentication.SessionAuthentication',
-#     ]
-# }
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [   'rest_framework.permissions.AllowAny' ]
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'rest_framework.authentication.BasicAuthentication',
+    #     'rest_framework.authentication.SessionAuthentication',
+    # ]
+}
+
