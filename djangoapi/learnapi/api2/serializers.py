@@ -1,12 +1,22 @@
 from rest_framework import serializers
 from .models import CustomUser,Blog
+from rest_framework_jwt.settings import api_settings
 
+from rest_framework_jwt.settings import api_settings
+JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
+JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model=CustomUser
         fields = "__all__"
+    # def get_token(self, obj):
+    #     jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+    #     jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
+    #     payload = jwt_payload_handler(obj)
+    #     token = jwt_encode_handler(payload)
+    #     return token
     def create(self, validated_data):
         user = CustomUser(
             email=validated_data['email'],

@@ -1,5 +1,9 @@
+
 from django.shortcuts import render
 from rest_framework import viewsets
+
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from .models import CustomUser,Blog
 from .serializers import UserSerializer,BlogSerializer
 from django.contrib.auth import get_user_model
@@ -7,12 +11,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login,logout
 from rest_framework.permissions import AllowAny,IsAuthenticated,IsAuthenticatedOrReadOnly
 from rest_framework.authentication import BasicAuthentication,SessionAuthentication
-
+from .permission_helper import IsOwner
+UserModel=get_user_model()
 # Create your views here.
 from django.http import JsonResponse
 class UserModelViewset(viewsets.ModelViewSet):
     permission_classes_by_action ={'create':[AllowAny]}
-
+    
 
     serializer_class = UserSerializer
     queryset = CustomUser.objects.all()
@@ -31,7 +36,7 @@ def generate_token():
 def signin(request):
     if request.method != "POST":
         return JsonResponse({"msg":"send post request"})
-
+    print(request.POST)
     username=request.POST["email"]
     password = request.POST["password"]
     print(password)
@@ -40,11 +45,12 @@ def signin(request):
     try:
         user = UserModel.objects.get(email=username)
         if user.check_password(password):
-            
+            token = generate_token()
+
             if user.session_token != "t":
                 user.session_token = "t"
                 user.save()
-                return JsonResponse({"error":"alreasdy"})
+                return JsonResponse({"token":token})
 
             token = generate_token()
             user.session_token=token
@@ -68,8 +74,8 @@ def signout(request,id):
 
 
 class BlogViewsets(viewsets.ModelViewSet):
-    permission_classes =[IsAuthenticatedOrReadOnly]
-    # authentication_classes=[BasicAuthentication]
+    permission_classes =[IsAuthenticated]
+    
     serializer_class=BlogSerializer
     queryset = Blog.objects.all()
     # def get_queryset(self):
@@ -77,3 +83,31 @@ class BlogViewsets(viewsets.ModelViewSet):
     #     return queryset.filter(user=self.request.user)
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+
+def validate_token(request,id,token):
+    user = UserModel.objects.get(id=id)
+    if user.session_token == token:
+        return JsonResponse({'LoggedIn':True})
+    return JsonResponse({"err":"error"})
+
+
+
+
+class HelloView(APIView):
+    permission_classes = (IsAuthenticated,)
+    
+    def get(self, request):
+        print(self.request.user)
+        content = {'message': 'Hello, World!'}
+        return Response(content)
+
+
+@csrf_exempt
+
+def forgot(request):
+    if request.method == 'POST':
+        name=request.POST["email"]
+        print(name)
+        return JsonResponse({"msg":"hello"})
